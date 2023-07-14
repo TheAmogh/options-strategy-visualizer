@@ -14,12 +14,14 @@ class Visualize:
     def __init__(self, strategy: Strategy):
         self.strategy = strategy
 
-    def plot_payout_graph(self, low: float, high: float, datapoints: int = 100):
+    def plot_payout_graph(self, low: float, high: float, datapoints: int = 1000):
         x = np.linspace(low, high, datapoints)
-        f = lambda spot_price: self.strategy.get_profit_on_expiry(spot_price)
-        y = np.vectorize(f)(x)
+        y = np.vectorize(lambda spot_price: self.strategy.get_profit_on_expiry(spot_price))(x)
+        self.plot_x_y(x, y)
+
+    def plot_x_y(self, x, y):
         plt.plot(x, y)
-        plt.plot(x, np.zeros(datapoints))
+        plt.plot(x, np.zeros(x.shape))
         plt.show()
 
 
@@ -51,4 +53,4 @@ if __name__ == '__main__':
     order2 = Order(Option(7600, Option.OptionType.PE, date.today()), Order.OrderType.Buy, 88)
     long_straddle = Strategy().add_order(order1).add_order(order2)
     print(long_straddle)
-    Visualize(long_straddle).plot_payout_graph(7100, 8100, datapoints=1000)
+    Visualize(long_straddle).plot_payout_graph(7100, 8100)
